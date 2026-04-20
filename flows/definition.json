@@ -1,0 +1,37 @@
+{
+  "name": "HPD SRA 312 Real-Time Alerts",
+  "description": "Emails an alert when a new call-for-service is published to the Henrico PD RSS feed for Security Reporting Area 312 (St. Luke).",
+  "trigger": {
+    "connector": "shared_rss",
+    "operation": "When a feed item is published",
+    "parameters": {
+      "feedUrl": "https://ppd.henrico.gov/rss/cad.aspx?sra=312",
+      "feedProperty": "PublishDate",
+      "since": "@utcNow()"
+    }
+  },
+  "actions": [
+    {
+      "name": "Send_an_email_(V2)",
+      "connector": "shared_office365",
+      "operation": "Send an email (V2)",
+      "parameters": {
+        "To": "<your email>",
+        "Subject": "[HPD SRA 312] @{triggerOutputs()?['body/title']} \u2014 @{formatDateTime(triggerOutputs()?['body/publishDate'], 'MM/dd/yyyy h:mm tt')}",
+        "Body": "<see flows/email-template.html>",
+        "Importance": "Normal"
+      }
+    }
+  ],
+  "triggerOutputFields": {
+    "id": "RSS item <link>",
+    "title": "Call type (e.g. 'Firearm Violation')",
+    "primaryLink": "Primary link URL",
+    "links": "Array of additional links",
+    "updatedOn": "ISO-8601 timestamp",
+    "publishDate": "ISO-8601 timestamp (used for dedup)",
+    "summary": "HTML-wrapped description including address in <strong> tags",
+    "copyright": "Copyright string",
+    "categories": "Array (empty for this feed)"
+  }
+}
